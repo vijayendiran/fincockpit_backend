@@ -17,8 +17,20 @@ const logtoConfig = require('./src/config/logto');
 
 // Middleware
 app.use(helmet());
+const allowedOrigins = [
+  "http://localhost:8080",
+  "https://fincockpit-frontend.vercel.app", // Added the main production URL too
+  "https://fincockpit-frontend-4oyglqb0b-vijayendiran-mms-projects.vercel.app"
+];
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:8080',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());
