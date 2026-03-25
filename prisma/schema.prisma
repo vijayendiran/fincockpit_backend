@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  logtoId           String?  @unique
+  name              String
+  email             String   @unique
+  password          String
+  phone             String?  @default("")
+  currency          String?  @default("INR")
+  monthlyBudget     Float?   @default(20000)
+  emailReminders    Boolean? @default(true)
+  pushNotifications Boolean? @default(true)
+  weeklyReport      Boolean? @default(false)
+  reminderDays      Int?     @default(3)
+  isEmailVerified   Boolean  @default(false)
+  verificationToken String?
+  verificationTokenExpiry DateTime?
+  createdAt         DateTime @default(now())
+  
+  categories        Category[]
+  expenses          Expense[]
+  incomes           Income[]
+  subscriptions     Subscription[]
+  forecast          Forecast?
+  financialGoals    FinancialGoal[]
+}
+
+model Category {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  type      String   // 'income' or 'expense'
+  icon      String?  @default("💰")
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  expenses      Expense[]
+  incomes       Income[]
+  subscriptions Subscription[]
+}
+
+model Expense {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  title       String
+  amount      Float
+  categoryId  String   @db.ObjectId
+  category    Category @relation(fields: [categoryId], references: [id])
+  date        DateTime @default(now())
+  description String?
+  isRecurring Boolean? @default(false)
+  currency    String   @default("INR")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Income {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  source      String
+  amount      Float
+  date        DateTime @default(now())
+  description String?
+  categoryId  String?  @db.ObjectId
+  category    Category? @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Subscription {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @db.ObjectId
+  user            User     @relation(fields: [userId], references: [id])
+  name            String
+  amount          Float
+  billingCycle    String   // 'weekly', 'monthly', 'yearly'
+  startDate       DateTime @default(now())
+  nextBillingDate DateTime
+  status          String?  @default("active")
+  categoryId      String?  @db.ObjectId
+  category        Category? @relation(fields: [categoryId], references: [id])
+  description     String?
+  currency        String   @default("INR")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Forecast {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String   @unique @db.ObjectId
+  user           User     @relation(fields: [userId], references: [id])
+  predictedTotal Float
+  confidence     String
+  breakdown      Json
+  trend          String
+  updatedAt      DateTime @default(now())
+}
+
+model ExchangeRate {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  base      String   @unique
+  rates     Json
+  fetchedAt DateTime @default(now())
+}
+
+model FinancialGoal {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @db.ObjectId
+  goalText        String                  // raw user input "save 1L in 15 years"
+  targetAmount    Float                   // 100000
+  targetYears     Int                     // 15
+  monthlyIncome   Float?
+  currentSavings  Float?
+  riskLevel       String   @default("moderate")  // "low" | "moderate" | "high"
+  result          Json?                   // AI + math result stored here
+  createdAt       DateTime @default(now())
+  user            User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}

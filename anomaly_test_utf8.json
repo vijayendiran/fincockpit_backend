@@ -1,0 +1,23 @@
+﻿[dotenv@17.2.3] injecting env (20) from .env -- tip: ≡ƒöæ add access controls to secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: Γ£à audit secrets and track compliance: https://dotenvx.com/ops
+Running anomaly detection for user: Vijayendiran (ID: 69b3fe954db3f69429e4f263)
+
+--- Anomaly Detection Results ---
+{
+  "anomalies": [
+    {
+      "category": "Other",
+      "severity": "high",
+      "message": "Unusually large expense of 10,000,000 in the 'Other' category",
+      "suggestion": "Review the 'Savings Goal' expense to ensure it's a planned and necessary expenditure"
+    },
+    {
+      "category": "Shopping",
+      "severity": "medium",
+      "message": "Large expense of 100,000 in the 'Shopping' category",
+      "suggestion": "Consider whether the 'Watch' purchase was a necessary expense and if there are ways to reduce shopping costs in the future"
+    }
+  ],
+  "summary": "Two potential spending anomalies detected in the 'Other' and 'Shopping' categories"
+}
+---------------------------------
