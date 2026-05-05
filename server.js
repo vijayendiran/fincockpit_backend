@@ -19,10 +19,8 @@ const logtoConfig = require('./src/config/logto');
 app.use(helmet());
 const allowedOrigins = [
   "http://localhost:8080",
-  "https://fincockpit-frontend.vercel.app", // Added the main production URL too
-  "https://fincockpit-frontend-4oyglqb0b-vijayendiran-mms-projects.vercel.app",
-  "https://fincockpit-frontend.onrender.com" // Added Render frontend URL
-];
+  process.env.FRONTEND_URL, // Set this in Render env vars (e.g. https://fincockpit-frontend.onrender.com)
+].filter(Boolean);
 
 app.use(cors({
   origin: function (origin, callback) {
