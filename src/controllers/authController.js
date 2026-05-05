@@ -54,9 +54,11 @@ const register = async (req, res) => {
       }
     });
 
-    // Send verification email
+    // Send verification email (non-blocking — signup succeeds even if email fails)
     const verificationLink = `${process.env.BACKEND_URL || 'http://localhost:5000'}/api/auth/verify-email?token=${token}`;
-    await sendVerificationEmail(email, verificationLink);
+    sendVerificationEmail(email, verificationLink).catch((emailErr) => {
+      console.error('Failed to send verification email:', emailErr.message);
+    });
 
     // Send response (no tokens — user must verify email first)
     res.status(201).json({
