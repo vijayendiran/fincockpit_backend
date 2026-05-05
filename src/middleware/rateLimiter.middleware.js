@@ -1,8 +1,8 @@
 const rateLimit = require("express-rate-limit");
 
 const loginLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 5,
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 50,
     standardHeaders: true,
     legacyHeaders: false,
     message: {
@@ -11,8 +11,8 @@ const loginLimiter = rateLimit({
 });
 
 const signupLimiter = rateLimit({
-    windowMs: 60 * 60 * 1000,
-    max: 10,
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 50,
     standardHeaders: true,
     legacyHeaders: false,
     message: {
