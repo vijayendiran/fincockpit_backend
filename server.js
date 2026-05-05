@@ -20,7 +20,8 @@ app.use(helmet());
 const allowedOrigins = [
   "http://localhost:8080",
   "https://fincockpit-frontend.vercel.app", // Added the main production URL too
-  "https://fincockpit-frontend-4oyglqb0b-vijayendiran-mms-projects.vercel.app"
+  "https://fincockpit-frontend-4oyglqb0b-vijayendiran-mms-projects.vercel.app",
+  "https://fincockpit-frontend.onrender.com" // Added Render frontend URL
 ];
 
 app.use(cors({
