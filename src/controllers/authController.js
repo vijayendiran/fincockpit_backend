@@ -44,26 +44,20 @@ const register = async (req, res) => {
       password
     });
 
-    // Generate verification token and store it
+    // Skip email verification completely
     const token = uuidv4();
     await prisma.user.update({
       where: { id: user.id },
       data: {
+        isEmailVerified: true, // Auto-verify email
         verificationToken: token,
-        verificationTokenExpiry: new Date(Date.now() + 3600000) // 1 hour
       }
-    });
-
-    // Send verification email (non-blocking — signup succeeds even if email fails)
-    const verificationLink = `${process.env.BACKEND_URL || 'http://localhost:5000'}/api/auth/verify-email?token=${token}`;
-    sendVerificationEmail(email, verificationLink).catch((emailErr) => {
-      console.error('Failed to send verification email:', emailErr.message);
     });
 
     // Send response (no tokens — user must verify email first)
     res.status(201).json({
       success: true,
-      message: 'Registration successful. Please check your email to verify your account.',
+      message: 'Registration successful. You can now log in.',
       data: {
         user: {
           id: user.id,
@@ -120,13 +114,7 @@ const login = async (req, res) => {
       });
     }
 
-    // Check if email is verified
-    if (!user.isEmailVerified) {
-      return res.status(403).json({
-        success: false,
-        message: 'Please verify your email before logging in'
-      });
-    }
+    // Removed the email verification check completely so users can log in instantly
 
     // Generate access + refresh tokens
     const accessToken = generateAccessToken(user.id);
